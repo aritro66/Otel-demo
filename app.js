@@ -3,12 +3,9 @@ const express = require('express');
 const app = express();
 
 const PORT = parseInt(process.env.PORT || '8080');
-// const { createLogger, transports } = require('winston')
 
-// const logger = createLogger({
-//     transports: [new transports.Console()],
-// })
 const { customLogger: logger } = require("./customLogger")
+
 function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }

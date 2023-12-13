@@ -4,34 +4,20 @@ const {
     LoggerProvider,
     BatchLogRecordProcessor,
 } = require('@opentelemetry/sdk-logs')
-const { Resource } = require('@opentelemetry/resources')
-const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions')
+const { resource, exporterConfigLogs } = require("./constants")
 const { SeverityNumber } = require('@opentelemetry/api-logs')
-require('dotenv').config()
 
-const resource = Resource.default().merge(
-    new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: 'my-app',
-        [SemanticResourceAttributes.SERVICE_VERSION]: '0.1.0',
-    })
-)
 
 const loggerProvider = new LoggerProvider({
     resource: resource,
 })
-const logExporter = new OTLPLogExporter({
-    url: `https://otel.kloudmate.com:4318/v1/logs`,
-    headers: {
-        Authorization: process.env.SECRET_KEY,
-    },
-})
+const logExporter = new OTLPLogExporter(exporterConfigLogs)
 const logProcessor = new BatchLogRecordProcessor(logExporter)
 loggerProvider.addLogRecordProcessor(logProcessor)
 
 const formatLog = (args) =>
     typeof args === 'string' ? args : JSON.stringify(args)
 
-// your winston implementation
 const consoleTransport = new transports.Console()
 const logger = createLogger({
     transports: [consoleTransport],
